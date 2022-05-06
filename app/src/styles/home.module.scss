@@ -1,0 +1,32 @@
+.home-container {
+    width: 100%;
+    height: 100%;
+    background-color: rgb(245,244,239);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url(./pic.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.button-fileinput {
+    display: none;
+}
+
+.button-upload {
+    display: block;
+    width: 15em;
+    height: 3em;
+    text-align: center;
+    border-radius: 30px;
+    background: brown;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.button-text {
+    line-height: 3em;
+    color: lightcyan;
+    font-weight: 1000;
+}

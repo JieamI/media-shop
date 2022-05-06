@@ -1,5 +1,6 @@
 import style from "../../styles/gallery.module.scss"
 import type { Processor } from "media-shop"
+import { undo, redo } from "../../utils"
 
 function ToolBar({ 
   setImage, 
@@ -22,12 +23,19 @@ function ToolBar({
     })
   }
 
+  const handleUndo = () => {
+    undo()
+  }
+  const handleRedo = () => {
+    redo()
+  }
+
   return (
     <div className={ style["toolbar-container"] }>
       <i className="iconfont icon-xiangzuoxuanzhuan" onClick={ rotateLeft }></i>
       <i className="iconfont icon-xiangyouxuanzhuan" onClick={ rotateRight }></i>
-      <i className="iconfont icon-fengmian-tupianbianji-chehui"></i>
-      <i className="iconfont icon-zhongzuo"></i>
+      <i className="iconfont icon-fengmian-tupianbianji-chehui" onClick={ handleUndo }></i>
+      <i className="iconfont icon-zhongzuo" onClick={ handleRedo }></i>
     </div>
   )
 }

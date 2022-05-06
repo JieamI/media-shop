@@ -2,10 +2,12 @@ import Stage from "./Stage"
 import style from '../../styles/gallery.module.scss'
 import ToolBar from "./ToolBar"
 import { useLocation, useNavigate  } from "react-router-dom"
-import { useEffect, useMemo, useRef, useState } from "react"
+import React, { useEffect, useMemo, useRef } from "react"
 import init, { Encoding, Processor } from 'media-shop'
+import { useHistoryImage } from "../../utils"
 
-// await init()
+
+
 function Gallery() {
   console.log("gallery")
   const location = useLocation()
@@ -17,7 +19,8 @@ function Gallery() {
     file = null
   }
  
-  const [image, setImage] = useState<ArrayBuffer>()
+  // const [image, setImage] = useState<ArrayBuffer>()
+  const [image, setImage] = useHistoryImage()
   const processor = useRef<Processor | null>(null)
 
 
@@ -49,9 +52,8 @@ function Gallery() {
               setImage={ setImage as React.Dispatch<React.SetStateAction<ArrayBuffer>> } 
               processor={ processor as React.MutableRefObject<Processor> }
             ></ToolBar>
-          ), [])
+          ), [setImage])
         }
-       
       </div>
     </div>
   )

@@ -3,8 +3,8 @@ import style from '../../styles/gallery.module.scss'
 import ToolBar from "./ToolBar"
 import { useLocation, useNavigate  } from "react-router-dom"
 import React, { useEffect, useMemo, useRef } from "react"
-import init, { Encoding, Processor } from 'media-shop'
-import { useHistoryImage } from "../../utils"
+import init, { Processor } from 'media-shop'
+import { useHistoryImage } from "../../utils/useHistoryImage"
 
 
 
@@ -31,7 +31,7 @@ function Gallery() {
     }
     (async function() {
       await init()
-      processor.current = new Processor(Encoding.PNG)
+      processor.current = new Processor()
       const buffer = await file.arrayBuffer()
       setImage(buffer)
     })()

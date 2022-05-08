@@ -1,4 +1,4 @@
-import { useRoutes } from "react-router";
+import { Navigate, useRoutes } from "react-router";
 import Home from './views/Home';
 import Gallery from "./views/Gallery";
 
@@ -10,6 +10,9 @@ function App() {
   }, {
     path: "/gallery",
     element: <Gallery></Gallery>
+  }, {
+    path: "/",
+    element: <Navigate to="/home"></Navigate>
   }])
   return routes
 }

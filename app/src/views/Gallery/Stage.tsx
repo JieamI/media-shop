@@ -2,7 +2,7 @@ import { CSSProperties, useCallback, useEffect, useRef, useState } from "react"
 import style from "../../styles/gallery.module.scss"
 
 
-const stageWidth = 500
+const stageWidth = 600
 const stageHeight = 500
 const stageInlineStyle: CSSProperties = {
   width: `${ stageWidth.toString() }px`,

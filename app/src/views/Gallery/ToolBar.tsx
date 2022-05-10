@@ -1,7 +1,7 @@
 import style from "../../styles/gallery.module.scss"
 import type { Processor } from "media-shop"
-import { undo, redo } from "../../utils/useHistoryImage"
-import { useRef, useState } from "react"
+import { undo, redo } from "../../hooks/useHistoryImage"
+import { useRangeInput } from "../../hooks/useRangeInput"
 
 function ToolBar({ 
   setImage, 
@@ -34,15 +34,6 @@ function ToolBar({
   }
 
   const handleEnlarge = () => {
-    // const currentWidth = metaData.width as number
-    // const currentHeight = metaData.height as number
-    // setImage(img => {
-    //   console.log(currentWidth * 4, currentHeight * 4)
-    //   console.time("enlarge")
-    //   const array = processor.current.resize(new Uint8Array(img), currentWidth * 4, currentHeight * 4)
-    //   console.timeEnd("enlarge")
-    //   return array.buffer
-    // })
     pubScale(({ curScale }: { curScale: number }) => curScale + 0.1)
   }
 
@@ -87,24 +78,10 @@ function ToolBar({
 
   const DEFAULT_HUE_ICON = "icon-icon_effects_filters_type_hue_rotate"
   const OK_ICON = "icon-ic_ok"
-  const [hueInputDisplay, setHueInputDisplay] = useState("none")
-  const [hueIcon, setHueIcon] = useState(DEFAULT_HUE_ICON)
-  const hueRange = useRef(null)
+  const [hueInputDisplay, hueIcon, hueRangeDom, baseHueHandler] = useRangeInput(DEFAULT_HUE_ICON, OK_ICON)
   const handleHueRotate = () => {
-    const isEditMode = hueInputDisplay === "none"
-    if(isEditMode) {
-      // 开始编辑模式
-      setBlurInputDisplay("none")
-      setBlurIcon(DEFAULT_BLUR_ICON)
-      setHueInputDisplay("initial")
-      setHueIcon(OK_ICON)
-      
-    }else {
-      // 完成编辑
-      setHueInputDisplay("none")
-      setHueIcon(DEFAULT_HUE_ICON);
-      const value = parseInt((hueRange.current as unknown as HTMLInputElement).value)
-      console.log(value)
+    const value = baseHueHandler()
+    if(value) {
       setImage(img => {
         const array = processor.hue_rotate(new Uint8Array(img), value)
         return array.buffer
@@ -112,27 +89,37 @@ function ToolBar({
     }
   }
 
-  const DEFAULT_BLUR_ICON = "icon-tuxiangmohu"
-  const [blurInputDisplay, setBlurInputDisplay] = useState("none")
-  const [blurIcon, setBlurIcon] = useState(DEFAULT_BLUR_ICON)
-  const blurRange = useRef(null)
+  const DEFAULT_BLUR_ICON = "icon-a-zhuangtaituxiangmohu"
+  const [blurInputDisplay, blurIcon, blurRangeDom, baseBlurHandler] = useRangeInput(DEFAULT_BLUR_ICON, OK_ICON)
   const handleBlur = () => {
-    const isEditMode = blurInputDisplay === "none"
-    if(isEditMode) {
-      // 开始编辑模式
-      setHueInputDisplay("none")
-      setHueIcon(DEFAULT_HUE_ICON)
-      setBlurInputDisplay("initial")
-      setBlurIcon(OK_ICON)
-      
-    }else {
-      // 完成编辑
-      setBlurInputDisplay("none")
-      setBlurIcon(DEFAULT_BLUR_ICON);
-      const value = parseInt((blurRange.current as unknown as HTMLInputElement).value)
-      console.log(value)
+    const value = baseBlurHandler()
+    if(value) {
       setImage(img => {
         const array = processor.blur(new Uint8Array(img), value)
+        return array.buffer
+      })
+    }
+  }
+
+  const DEFAULT_BRIGHTEN_ICON = "icon-liangdu-"
+  const [brightenInputDisplay, brightenIcon, brightenRangeDom, baseBrightenHandler] = useRangeInput(DEFAULT_BRIGHTEN_ICON, OK_ICON)
+  const handleBrighten = () => {
+    const value = baseBrightenHandler()
+    if(value) {
+      setImage(img => {
+        const array = processor.brighten(new Uint8Array(img), value)
+        return array.buffer
+      })
+    }
+  }
+
+  const DEFAULT_CONTRAST_ICON = "icon-shishishipin_duibidu"
+  const [contrastInputDisplay, contrastIcon, contrastRangeDom, baseContrastHandler] = useRangeInput(DEFAULT_CONTRAST_ICON, OK_ICON)
+  const handleContrast = () => {
+    const value = baseContrastHandler()
+    if(value) {
+      setImage(img => {
+        const array = processor.contrast(new Uint8Array(img), value)
         return array.buffer
       })
     }
@@ -148,10 +135,10 @@ function ToolBar({
       <i className="iconfont icon-chuizhifanzhuan" onClick={ verticalFlip }></i>
       <i className="iconfont icon-huidu-01" onClick={ handleGrayScale }></i>
       <i className="iconfont icon-biaoqianerzhihua" onClick={ handleBinarize }></i>
-      <i className="iconfont icon-invert" onClick={ handleInvert }></i>
+     
       <i className={ `iconfont ${ hueIcon } ${style["toolbar-hue-icon"]}` } onClick={ handleHueRotate }>
         <input 
-          ref={ hueRange }
+          ref={ hueRangeDom }
           type="range" 
           className={ style["range"] } 
           defaultValue="180"
@@ -163,7 +150,7 @@ function ToolBar({
       </i>
       <i className={ `iconfont ${ blurIcon } ${style["toolbar-blur-icon"]}`} onClick={ handleBlur }>
         <input 
-          ref={ blurRange }
+          ref={ blurRangeDom }
           type="range" 
           className={ style["range"] } 
           defaultValue="25"
@@ -173,7 +160,31 @@ function ToolBar({
           style={ { display: blurInputDisplay } }
         ></input>
       </i>
-
+      <i className={ `iconfont ${ brightenIcon } ${style["toolbar-brighten-icon"]}`} onClick={ handleBrighten }>
+        <input 
+          ref={ brightenRangeDom }
+          type="range" 
+          className={ style["range"] } 
+          defaultValue="0"
+          min="-200" 
+          max="200" 
+          onClick={(e) => {e.stopPropagation()}} 
+          style={ { display: brightenInputDisplay } }
+        ></input>
+      </i>
+      <i className={ `iconfont ${ contrastIcon } ${style["toolbar-contrast-icon"]}`} onClick={ handleContrast }>
+        <input 
+          ref={ contrastRangeDom }
+          type="range" 
+          className={ style["range"] } 
+          defaultValue="0"
+          min="-100" 
+          max="100" 
+          onClick={(e) => {e.stopPropagation()}} 
+          style={ { display: contrastInputDisplay } }
+        ></input>
+      </i>
+      <i className="iconfont icon-invert" onClick={ handleInvert }></i>
       <i className="iconfont icon-fengmian-tupianbianji-chehui" onClick={ handleUndo }></i>
       <i className="iconfont icon-zhongzuo" onClick={ handleRedo }></i>
     </div>

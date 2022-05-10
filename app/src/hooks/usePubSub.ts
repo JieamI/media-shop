@@ -25,7 +25,6 @@ import { useRef } from "react"
 //   })
 // }
 
-
 export function usePubSub<U extends Object & { [key: string]: any }>(): [(handler: (arg: any) => any, extras?: U) => () => void, (arg: any) => void] {
 
   const handlers = useRef<((arg: any) => void)[]>([])

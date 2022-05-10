@@ -1,4 +1,4 @@
-@import url("//at.alicdn.com/t/font_3377559_3lnm9bj0geh.css");
+@import url("//at.alicdn.com/t/font_3377559_cmxurdwvkhb.css");
 
 .gallery-container {
   width: 100%;
@@ -13,7 +13,7 @@
 }
 
 .stage-container {
-  width: 500px;
+  width: 600px;
   height: 500px;
   border-radius: 20px;
   background: #ddd9d9;
@@ -43,7 +43,6 @@
   box-shadow: 3px 3px 10px 1px lightgray;
   i {
     margin: 0 10px;
-    // font-size: 20px;
     cursor: pointer;
   }
 
@@ -58,6 +57,24 @@
   }
 
   .toolbar-hue-icon {
+    position: relative;
+    .range {
+      position: absolute;
+      top: -40px;
+      left: -60px;
+    }
+  }
+
+  .toolbar-brighten-icon {
+    position: relative;
+    .range {
+      position: absolute;
+      top: -40px;
+      left: -60px;
+    }
+  }
+
+  .toolbar-contrast-icon {
     position: relative;
     .range {
       position: absolute;

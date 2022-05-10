@@ -1,4 +1,4 @@
-@import url("//at.alicdn.com/t/font_3377559_x82yhuro7cf.css");
+@import url("//at.alicdn.com/t/font_3377559_3lnm9bj0geh.css");
 
 .gallery-container {
   width: 100%;
@@ -23,6 +23,7 @@
 }
 
 .stage-canvas {
+  display: block;
   width: 100%;
   height: 100%;
 }
@@ -42,6 +43,26 @@
   box-shadow: 3px 3px 10px 1px lightgray;
   i {
     margin: 0 10px;
-    font-size: 20px;
+    // font-size: 20px;
+    cursor: pointer;
+  }
+
+  .toolbar-blur-icon {
+    position: relative;
+    // background-color: black;
+    .range {
+      position: absolute;
+      top: -40px;
+      left: -60px;
+    }
+  }
+
+  .toolbar-hue-icon {
+    position: relative;
+    .range {
+      position: absolute;
+      top: -40px;
+      left: -60px;
+    }
   }
 }

@@ -2,9 +2,10 @@ import Stage from "./Stage"
 import style from '../../styles/gallery.module.scss'
 import ToolBar from "./ToolBar"
 import { useLocation, useNavigate  } from "react-router-dom"
-import React, { useEffect, useMemo, useRef } from "react"
+import React, { useEffect, useRef } from "react"
 import init, { Processor } from 'media-shop'
 import { useHistoryImage } from "../../utils/useHistoryImage"
+import { usePubSub } from "../../utils/usePubSub"
 
 
 
@@ -19,10 +20,9 @@ function Gallery() {
     file = null
   }
  
-  // const [image, setImage] = useState<ArrayBuffer>()
   const [image, setImage] = useHistoryImage()
-  const processor = useRef<Processor | null>(null)
-
+  const processor = useRef<Processor>()
+  const [subScale, pubScale] = usePubSub<{[key: string]: any}>()
 
   useEffect(() => {
     if(!file) {
@@ -37,23 +37,21 @@ function Gallery() {
     })()
   }, [])  /* eslint-disable-line react-hooks/exhaustive-deps */
 
-  // const processor = useRef<Processor | null>(null)
-  // useEffect(() => {
-  //   processor.current = new Processor(Encoding.PNG)
-  // }, [])
- 
   return (
     <div className={ style["gallery-container"] }>
       <div className={ style["gallery-main"] }>
-        <Stage image={ image as ArrayBuffer }></Stage>
-        {
-          useMemo(() => (
-            <ToolBar 
-              setImage={ setImage as React.Dispatch<React.SetStateAction<ArrayBuffer>> } 
-              processor={ processor as React.MutableRefObject<Processor> }
-            ></ToolBar>
-          ), [setImage])
-        }
+        <Stage 
+          image={ image as ArrayBuffer } 
+          subScale={ subScale } 
+        ></Stage>
+       
+        <ToolBar 
+          setImage={ setImage as React.Dispatch<React.SetStateAction<ArrayBuffer>> } 
+          processor={ processor.current as Processor }
+          pubScale={ pubScale }
+        ></ToolBar>
+         
+       
       </div>
     </div>
   )

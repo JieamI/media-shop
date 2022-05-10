@@ -1,4 +1,4 @@
-import { CSSProperties, useEffect, useRef } from "react"
+import { CSSProperties, useCallback, useEffect, useRef, useState } from "react"
 import style from "../../styles/gallery.module.scss"
 
 
@@ -7,12 +7,23 @@ const stageHeight = 500
 const stageInlineStyle: CSSProperties = {
   width: `${ stageWidth.toString() }px`,
   height: `${ stageHeight.toString() }px`,
+  overflow: "auto"
 }
 
-function Stage({ image }: { image: ArrayBuffer }) {
+function Stage({
+    image,
+    subScale,
+  }: { 
+    image: ArrayBuffer,
+    subScale: (handler: (arg: any) => any, extras?: { [key: string]: any } | undefined) => () => void
+  }) {
   console.log("stage")
   const canvas = useRef(null)
+  const [scale, setScale] = useState(1)
   const loadImage = (buffer: ArrayBuffer) => {
+    const canvasElement = canvas.current as unknown as HTMLCanvasElement
+    canvasElement.width = canvasElement.clientWidth
+    canvasElement.height = canvasElement.clientHeight
     const img = new Image()
     const ctx = (canvas.current as unknown as HTMLCanvasElement).getContext("2d")
     img.onload = () => {
@@ -28,21 +39,29 @@ function Stage({ image }: { image: ArrayBuffer }) {
     const blob = new Blob([buffer])
     img.src = URL.createObjectURL(blob)
   }
-  
+
   useEffect(() => {
-    const canvasElement = canvas.current as unknown as HTMLCanvasElement
-    canvasElement.width = canvasElement.clientWidth
-    canvasElement.height = canvasElement.clientHeight
     loadImage(image)
   }, [image])
 
+  const scaleHandler = useCallback((value: number) => {
+    setScale(value)
+  }, [])
+
+  useEffect(() => {
+    subScale(scaleHandler, {
+      curScale: scale
+    })
+  }, [scale]) // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
     <div className={ style["stage-container"] } style={ stageInlineStyle }>
-      <canvas ref={ canvas } className={ style["stage-canvas"] }>
+      <canvas ref={ canvas } className={ style["stage-canvas"] } style={ {transform: `scale(${scale})`} }>
 
       </canvas>
     </div>
   )
 } 
+
 
 export default Stage

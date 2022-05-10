@@ -1,6 +1,9 @@
+use image::imageops;
+use std::time::{ SystemTime };
 
 fn main() {
-  let img = image::open("./fractal.png").unwrap();
+  let now = SystemTime::now();
+  let img = image::open("app/src/styles/pic.jpg").unwrap();
   // let rgb = img.to_rgb8();
   // for (x, y, p) in rgb.enumerate_pixels_mut() {
   //     if x == y {
@@ -12,18 +15,21 @@ fn main() {
   // rgb = imageops::contrast(&rgb, 100.0); // recomended value -100.0 ~ 100.0
   // let res: ImageBuffer<Luma<u8>, Vec<u8>> = imageops::grayscale(&rgb);
   // let res = imageops::blur(&rgb, 100.0);
-  // let res = imageops::resize(&rgb, 800, 1600, imageops::FilterType::Nearest);
-  let mut gray = img.into_luma8();
-  for (_, _, p) in gray.enumerate_pixels_mut() {
-    if p.0[0] <= 150 {
-      p.0 = [0]
-    }else {
-      p.0 = [255]
-    }
-  };
+  let width = img.width();
+  let height = img.height();
+  println!("{}, {}", width * 4, height * 4);
+  let res = imageops::resize(&img, 4 * width, 4 * height, imageops::FilterType::Nearest);
+  // let mut gray = img.into_luma8();
+  // for (_, _, p) in gray.enumerate_pixels_mut() {
+  //   if p.0[0] <= 150 {
+  //     p.0 = [0]
+  //   }else {
+  //     p.0 = [255]
+  //   }
+  // };
   // let res = imageops::huerotate(&rgb, 180);
   // imageops::invert(&mut rgb);
   // image::save_buffer("./res.png", &rgb, rgb.width(), rgb.height(), image::ColorType::Rgb8).unwrap();
-  image::save_buffer("./res.png", &gray, gray.width(), gray.height(), image::ColorType::L8).unwrap();
-  println!("dwadwadwadw")
+  println!("{:?}", now.elapsed().unwrap().as_millis());
+  image::save_buffer("./res.png", &res, res.width(), res.height(), image::ColorType::Rgba8).unwrap();
 }

@@ -1,6 +1,4 @@
 import React, { useState } from "react"
-import { Event } from "./createPubSub"
-import publish from "./useImageMeta"
 
 const MAX_STACK_LENGTH: number = 10
 
@@ -40,7 +38,6 @@ export function useHistoryImage(): [ArrayBuffer | undefined, React.Dispatch<Reac
 
   const setImageWrapper = (state: React.SetStateAction<ArrayBuffer | undefined>) => {
     let nextState = typeof state === "function"? state(image): state
-    publish(Event.UPDATE_META, nextState as ArrayBuffer)
     setImage(nextState)
    
     if(historyNodeLength === MAX_STACK_LENGTH) {

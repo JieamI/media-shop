@@ -14,13 +14,14 @@ function Stage({
     image,
     subScale,
   }: { 
-    image: ArrayBuffer,
+    image: ArrayBuffer | undefined,
     subScale: (handler: (arg: any) => any, extras?: { [key: string]: any } | undefined) => () => void
   }) {
   console.log("stage")
   const canvas = useRef(null)
   const [scale, setScale] = useState(1)
-  const loadImage = (buffer: ArrayBuffer) => {
+  const loadImage = (buffer?: ArrayBuffer) => {
+    if(!buffer) return
     const canvasElement = canvas.current as unknown as HTMLCanvasElement
     canvasElement.width = canvasElement.clientWidth
     canvasElement.height = canvasElement.clientHeight
@@ -41,7 +42,7 @@ function Stage({
   }
 
   useEffect(() => {
-    loadImage(image)
+    loadImage(image)    
   }, [image])
 
   const scaleHandler = useCallback((value: number) => {

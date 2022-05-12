@@ -1,4 +1,4 @@
-@import url("//at.alicdn.com/t/font_3377559_cmxurdwvkhb.css");
+@import url("./icons.scss");
 
 .gallery-container {
   width: 100%;
@@ -16,7 +16,7 @@
   width: 600px;
   height: 500px;
   border-radius: 20px;
-  background: #ddd9d9;
+  background-color: #ddd9d9;
   box-shadow: 5px 5px 10px 1px lightgray;
   box-sizing: content-box;
   padding: 20px;
@@ -32,17 +32,17 @@
   margin: 1em 0;
   width: 100%;
   height: 40px;
-  background: lightblue;
+  background-color: lightblue;
   border-radius: 12px;
   padding: 0 30px;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  font-weight: bolder;
-  color: #1296db;
   box-shadow: 3px 3px 10px 1px lightgray;
   i {
     margin: 0 10px;
+    color: #1296db;
+    font-weight: bolder;
     cursor: pointer;
   }
 
@@ -80,6 +80,84 @@
       position: absolute;
       top: -40px;
       left: -60px;
+    }
+  }
+}
+
+.download-container {
+  position: absolute;
+  margin: 20px;
+  top: 0;
+  left: 100%;
+  // width: 100px;
+  .download-button {
+    background-color: yellowgreen;
+    border-radius: 50%;
+    padding: 12px;
+    width: fit-content;
+    box-shadow: 0 0 10px 2px lightblue;
+    cursor: pointer;
+    i {
+      font-weight: bold;
+      color: #1296db;
+      font-size: 30px;
+    }
+  }
+  .download-form {
+    $bgColor: #ddd9d9;
+    
+    transition: opacity 1.2s;
+    border-radius: 20px;
+    width: 200px;
+    padding: 12px;
+    margin: 20px 0;
+    background-color: $bgColor;
+    position: relative;
+    box-shadow: 5px 5px 10px 1px lightgray;
+    display: flex;
+    flex-direction: column;
+    .download-item {
+      margin: 5px 0;
+      select {
+        width: 100%;
+        border-radius: 12px;
+        border: none;
+        padding: 5px;
+      }
+      input {
+        width: 100%;
+        padding: 5px;
+        border-radius: 12px;
+        border: none;
+      }
+      button {
+        display: block;
+        width: 100%;
+        border-radius: 20px;
+        border: none;
+        background-color: orange;
+        padding: 5px 0;
+        cursor: pointer;
+      }
+    }
+    i {
+      color: #1296db;
+      font-weight: bold;
+      font-size: 18px;
+      align-self: center;
+      cursor: pointer;
+    }
+    
+    &::before {
+      content: "";
+      display: block;
+      position: absolute;
+      top: -5px;
+      width: 30px;
+      height: 30px;
+      background-color: $bgColor;
+      transform: rotate(45deg);
+      z-index: -1000;
     }
   }
 }

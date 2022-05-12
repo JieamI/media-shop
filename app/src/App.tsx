@@ -11,7 +11,7 @@ function App() {
     path: "/gallery",
     element: <Gallery></Gallery>
   }, {
-    path: "/",
+    path: "/*",
     element: <Navigate to="/home"></Navigate>
   }])
   return routes

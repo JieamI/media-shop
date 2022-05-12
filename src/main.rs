@@ -1,35 +1,96 @@
-use image::imageops;
+#![allow(dead_code)]
+
+use std::fs::File;
+use std::io::Write;
+use std::ops::Deref;
 use std::time::{ SystemTime };
+use image::{load_from_memory, DynamicImage, imageops};
+use image::{ImageBuffer, Pixel, ImageEncoder, ImageError, PixelWithColorType};
+use image::codecs::{bmp::BmpEncoder, jpeg::JpegEncoder, png::PngEncoder, ico::IcoEncoder};
+
+enum Encoding {
+  JPEG,
+  PNG,
+  BMP,
+  ICO
+}
+
+fn encode<P, Container>(buffer: ImageBuffer<P, Container>, encoding: &Encoding) -> Result<Box<[u8]>, ImageError>
+where
+  P:Pixel<Subpixel = u8> + PixelWithColorType,    
+  Container: Deref<Target = [P::Subpixel]>,
+{
+  let mut result = Vec::<u8>::new();
+  let width = buffer.width();
+  let height = buffer.height();
+  match encoding {
+    Encoding::PNG => {
+      let encoder = PngEncoder::new(&mut result);
+      encoder.write_image(&buffer, width, height, P::COLOR_TYPE)?;
+    },
+    Encoding::JPEG => {
+      let encoder = JpegEncoder::new(&mut result);
+      encoder.write_image(&buffer, width, height, P::COLOR_TYPE)?;
+    },
+    Encoding::BMP => {
+      let encoder = BmpEncoder::new(&mut result);
+      encoder.write_image(&buffer, width, height, P::COLOR_TYPE)?;
+    },
+    Encoding::ICO => {
+      let encoder = IcoEncoder::new(&mut result);
+      encoder.write_image(&buffer, width, height, P::COLOR_TYPE).unwrap();
+    }
+  };
+  Ok(result.into_boxed_slice())
+}
+
+fn convert_format<'a>(buffer: &[u8], format: Encoding) -> Result<Box<[u8]>, &'a str>{
+  let dyn_image = load_from_memory(buffer).unwrap();
+  let result: Box<[u8]>;
+  match dyn_image {
+    DynamicImage::ImageRgb8(buffer) => {
+      println!("rgb8");
+      result = encode(buffer, &format).map_err(|_| {
+        "fail to encode"
+      })?;
+    },
+    DynamicImage::ImageRgba8(buffer) => {
+      println!("rgba8");
+      result = encode(buffer, &format).map_err(|_| {
+        "fail to encode"
+      })?;
+    },
+    DynamicImage::ImageLuma8(buffer) => {
+      println!("luma8");
+      result = encode(buffer, &format).map_err(|_| {
+        "fail to encode"
+      })?;
+    },
+    DynamicImage::ImageLumaA8(buffer) => {
+      println!("luma8");
+      result = encode(buffer, &format).map_err(|_| {
+        "fail to encode"
+      })?;
+    },
+    _ => return Err("fail to encode")
+  };
+  Ok(result)
+}
 
 fn main() {
   let now = SystemTime::now();
   let img = image::open("app/src/styles/pic.jpg").unwrap();
-  // let rgb = img.to_rgb8();
-  // for (x, y, p) in rgb.enumerate_pixels_mut() {
-  //     if x == y {
-  //         p.0 = [0,0,0];
-  //     }
-  // }
-  // rgb = imageops::flip_horizontal(&rgb);
-  // let res = imageops::brighten(&rgb, 200); // recomended value -200 ~ 200
-  // rgb = imageops::contrast(&rgb, 100.0); // recomended value -100.0 ~ 100.0
-  // let res: ImageBuffer<Luma<u8>, Vec<u8>> = imageops::grayscale(&rgb);
-  // let res = imageops::blur(&rgb, 100.0);
-  let width = img.width();
-  let height = img.height();
-  println!("{}, {}", width * 4, height * 4);
-  let res = imageops::resize(&img, 4 * width, 4 * height, imageops::FilterType::Nearest);
-  // let mut gray = img.into_luma8();
-  // for (_, _, p) in gray.enumerate_pixels_mut() {
-  //   if p.0[0] <= 150 {
-  //     p.0 = [0]
-  //   }else {
-  //     p.0 = [255]
-  //   }
-  // };
-  // let res = imageops::huerotate(&rgb, 180);
-  // imageops::invert(&mut rgb);
-  // image::save_buffer("./res.png", &rgb, rgb.width(), rgb.height(), image::ColorType::Rgb8).unwrap();
+  // let width = img.width();
+  // let height = img.height();
+
+  // let bytes = img.into_bytes();
+  // let buffer = bytes.as_ref();
+  let m = imageops::resize(&img, 256, 125, imageops::FilterType::Nearest);
+  // let s = m.to_vec();
+  // let res = convert_format(&s, Encoding::ICO).unwrap();
+  let res = encode(m, &Encoding::ICO).unwrap();
+  // image::save_buffer("./res.png", &res, width, height, image::ColorType::Rgb8).unwrap();
+  let mut file = File::create("./res").unwrap();
+  file.write_all(&res).unwrap();
   println!("{:?}", now.elapsed().unwrap().as_millis());
-  image::save_buffer("./res.png", &res, res.width(), res.height(), image::ColorType::Rgba8).unwrap();
 }

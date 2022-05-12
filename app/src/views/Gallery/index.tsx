@@ -6,6 +6,7 @@ import React, { useEffect, useRef } from "react"
 import init, { Processor } from 'media-shop'
 import { useHistoryImage } from "../../hooks/useHistoryImage"
 import { usePubSub } from "../../hooks/usePubSub"
+import Download from "./Download"
 
 
 
@@ -41,7 +42,7 @@ function Gallery() {
     <div className={ style["gallery-container"] }>
       <div className={ style["gallery-main"] }>
         <Stage 
-          image={ image as ArrayBuffer } 
+          image={ image } 
           subScale={ subScale } 
         ></Stage>
        
@@ -51,7 +52,10 @@ function Gallery() {
           pubScale={ pubScale }
         ></ToolBar>
          
-       
+        <Download 
+          image={ image }
+          processor={ processor.current as Processor }
+        ></Download>
       </div>
     </div>
   )

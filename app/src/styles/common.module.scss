@@ -1,0 +1,50 @@
+@import url("./icons.scss");
+
+.error-container {
+  position: absolute;
+  top: 0;
+  left: calc(50vw - 150px);
+  margin: 50px auto;
+  width: 300px;
+  border-radius: 20px;
+  opacity: 0.5;
+  line-height: 2.5;
+  background-color: lightcoral;
+  display: flex;
+  i {
+    margin: 0 12px;
+    color: red;
+    font-weight: bold;
+  }
+}
+
+.loading-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: lightgray;
+  opacity: 0.5;
+  i {
+    color: #1296db;
+    font-size: 80px;
+    animation-name: rotate;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease;
+  }
+
+  @keyframes rotate {
+    from {
+      transform: rotate(0edg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}
+

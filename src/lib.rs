@@ -2,7 +2,7 @@ mod utils;
 mod filter;
 mod transform;
 use image::{DynamicImage, load_from_memory};
-use utils::Encoding;
+pub use utils::Encoding;
 use wasm_bindgen::prelude::*;
 
 use crate::utils::encode;
@@ -14,7 +14,7 @@ extern {
 }
 
 #[wasm_bindgen(start)]
-pub fn main() {
+pub fn start() {
   log("start!");
   utils::set_panic_hook();
 }

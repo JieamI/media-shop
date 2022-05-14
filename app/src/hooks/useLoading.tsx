@@ -4,7 +4,7 @@
 import ReactDom from 'react-dom/client'
 import style from '../styles/common.module.scss'
 
-function showLoading() {
+function showLoading(compute: () => void) {
   const div = document.createElement("div")
   document.body.appendChild(div)
   const root = ReactDom.createRoot(div)
@@ -14,10 +14,12 @@ function showLoading() {
       <i className="iconfont icon-jiazaizhong"></i>
     </div>
   )
-  return () => {
+
+  setTimeout(() => {
+    compute()
     root.unmount()
     document.body.removeChild(div)
-  }
+  })
 }
 
 export default showLoading

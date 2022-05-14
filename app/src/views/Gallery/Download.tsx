@@ -70,8 +70,7 @@ function Download({
   }
 
   const handleDownload = () => {
-    const cancelLoading = showLoading()
-    setTimeout(() => {
+    showLoading(() => {
       // 预处理
       let buffer: ArrayBuffer = image as ArrayBuffer
       const curWidth = parseInt(width)
@@ -91,7 +90,6 @@ function Download({
           default: encoding = Encoding.PNG;
         }
         if(encoding === Encoding.ICO && (curWidth > 256 || curHeight > 256)) {
-          cancelLoading()
           showError("ICON文件宽高均不得超过256px!", 3000)
           return
         }
@@ -103,7 +101,6 @@ function Download({
       el.href = URL.createObjectURL(blob)
       el.download = `picture_by_ms.${format.toLowerCase()}`
       el.click() 
-      cancelLoading()
     })
   }
   return (

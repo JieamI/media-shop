@@ -1,6 +1,7 @@
 import { Navigate, useRoutes } from "react-router";
 import Home from './views/Home';
 import Gallery from "./views/Gallery";
+import Lab from "./views/Lab";
 
 
 function App() {
@@ -10,6 +11,9 @@ function App() {
   }, {
     path: "/gallery",
     element: <Gallery></Gallery>
+  }, {
+    path: "/lab",
+    element: <Lab></Lab>
   }, {
     path: "/*",
     element: <Navigate to="/home"></Navigate>

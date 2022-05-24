@@ -2,24 +2,34 @@ import style from "../../styles/gallery.module.scss"
 import type { Processor } from "media-shop"
 import { undo, redo } from "../../hooks/useHistoryImage"
 import { useRangeInput } from "../../hooks/useRangeInput"
+import { Action } from "../../share/dispatcher"
 
 function ToolBar({ 
   setImage, 
   processor,
   pubScale,
+  worker
 }: { 
   setImage: React.Dispatch<React.SetStateAction<ArrayBuffer>>,
   processor: Processor,
   pubScale: (arg: any) => void,
+  worker: Worker
 }) {
   console.log("toolbar")
   const rotateLeft = () => {
+    worker.postMessage({
+      action: Action.ROTATE270
+    })
     setImage(img => {
       const array = processor.rotate_anticlock(new Uint8Array(img))
       return array.buffer
     })
   }
+
   const rotateRight = () => {
+    worker.postMessage({
+      action: Action.ROTATE90
+    })
     setImage(img => {
       const array = processor.rotate_clock(new Uint8Array(img))
       return array.buffer
@@ -27,9 +37,15 @@ function ToolBar({
   }
 
   const handleUndo = () => {
+    worker.postMessage({
+      action: Action.UNDO
+    })
     undo()
   }
   const handleRedo = () => {
+    worker.postMessage({
+      action: Action.REDO
+    })
     redo()
   }
 

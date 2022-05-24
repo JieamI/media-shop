@@ -4,7 +4,7 @@
 import ReactDom from 'react-dom/client'
 import style from '../styles/common.module.scss'
 
-function showLoading(compute: () => void) {
+function showLoading(compute: () => void | Promise<void>) {
   const div = document.createElement("div")
   document.body.appendChild(div)
   const root = ReactDom.createRoot(div)
@@ -15,8 +15,8 @@ function showLoading(compute: () => void) {
     </div>
   )
 
-  setTimeout(() => {
-    compute()
+  setTimeout(async () => {
+    await compute()
     root.unmount()
     document.body.removeChild(div)
   })

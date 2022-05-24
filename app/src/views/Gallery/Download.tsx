@@ -2,14 +2,17 @@ import { Encoding, Processor } from "media-shop"
 import { BaseSyntheticEvent, useEffect, useRef, useState } from "react"
 import showError from "../../hooks/useError"
 import showLoading from "../../hooks/useLoading"
+import { Action } from "../../share/dispatcher"
 import style from '../../styles/gallery.module.scss'
 
 function Download({
   image,
-  processor
+  processor,
+  worker
 }: {
   image: ArrayBuffer | undefined,
-  processor: Processor
+  processor: Processor,
+  worker: Worker
 }) {
   console.log("download")
 
@@ -70,15 +73,26 @@ function Download({
   }
 
   const handleDownload = () => {
-    showLoading(() => {
+    
+    
+    showLoading(async () => {
+      const promise = new Promise<ArrayBuffer>((resolve, _) => {
+        worker.onmessage = (e: MessageEvent) => {
+          resolve(e.data)
+        }
+      })
       // 预处理
-      let buffer: ArrayBuffer = image as ArrayBuffer
+      // let buffer: ArrayBuffer = image as ArrayBuffer
       const curWidth = parseInt(width)
       const curHeight = parseInt(height)
       const originWidth = (imageMeta.current as { width: number, height: number }).width
       const originHeight = (imageMeta.current as { width: number, height: number }).height
       if(curWidth !== originWidth || curHeight !== originHeight) {
-        buffer = processor.resize(new Uint8Array(buffer), curWidth, curHeight)
+        // buffer = processor.resize(new Uint8Array(buffer), curWidth, curHeight)
+        worker.postMessage({
+          action: Action.RESIZE,
+          data: { width: curWidth, height: curHeight }
+        })
       }
       if(format !== "PNG") {
         let encoding: Encoding
@@ -93,9 +107,16 @@ function Download({
           showError("ICON文件宽高均不得超过256px!", 3000)
           return
         }
-        buffer = processor.convert_format(new Uint8Array(buffer), encoding)
+        // buffer = processor.convert_format(new Uint8Array(buffer), encoding)
+        worker.postMessage({
+          action: Action.CVTFMT,
+          data: encoding
+        })
       }
-      
+      worker.postMessage({
+        action: Action.RETRIEVE
+      })
+      const buffer = await promise
       const el = document.createElement("a")
       const blob = new Blob([buffer])
       el.href = URL.createObjectURL(blob)

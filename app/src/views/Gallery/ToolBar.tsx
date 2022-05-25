@@ -58,6 +58,9 @@ function ToolBar({
   }
 
   const horizontalFlip = () => {
+    worker.postMessage({
+      action: Action.HORIZONTALFLIP
+    })
     setImage(img => {
       const array = processor.flip_horizontal(new Uint8Array(img))
       return array.buffer
@@ -65,6 +68,9 @@ function ToolBar({
   }
 
   const verticalFlip = () => {
+    worker.postMessage({
+      action: Action.VERTICALFLIP
+    })
     setImage(img => {
       const array = processor.flip_vertical(new Uint8Array(img))
       return array.buffer
@@ -72,6 +78,9 @@ function ToolBar({
   }
 
   const handleGrayScale = () => {
+    worker.postMessage({
+      action: Action.GRAYSCALE
+    })
     setImage(img => {
       const array = processor.grayscale(new Uint8Array(img))
       return array.buffer
@@ -79,6 +88,10 @@ function ToolBar({
   }
 
   const handleBinarize = () => {
+    worker.postMessage({
+      action: Action.BINARIZE,
+      data: 127
+    })
     setImage(img => {
       const array = processor.binarize(new Uint8Array(img), 127)
       return array.buffer
@@ -86,6 +99,9 @@ function ToolBar({
   }
 
   const handleInvert = () => {
+    worker.postMessage({
+      action: Action.INVERT
+    })
     setImage(img => {
       const array = processor.invert(new Uint8Array(img))
       return array.buffer
@@ -98,6 +114,10 @@ function ToolBar({
   const handleHueRotate = () => {
     const value = baseHueHandler()
     if(value) {
+      worker.postMessage({
+        action: Action.HUEROTATE,
+        data: value
+      })
       setImage(img => {
         const array = processor.hue_rotate(new Uint8Array(img), value)
         return array.buffer
@@ -110,6 +130,10 @@ function ToolBar({
   const handleBlur = () => {
     const value = baseBlurHandler()
     if(value) {
+      worker.postMessage({
+        action: Action.BLUR,
+        data: value
+      })
       setImage(img => {
         const array = processor.blur(new Uint8Array(img), value)
         return array.buffer
@@ -122,6 +146,10 @@ function ToolBar({
   const handleBrighten = () => {
     const value = baseBrightenHandler()
     if(value) {
+      worker.postMessage({
+        action: Action.BRIGHTEN,
+        data: value
+      })
       setImage(img => {
         const array = processor.brighten(new Uint8Array(img), value)
         return array.buffer
@@ -134,6 +162,10 @@ function ToolBar({
   const handleContrast = () => {
     const value = baseContrastHandler()
     if(value) {
+      worker.postMessage({
+        action: Action.CONTRAST,
+        data: value
+      })
       setImage(img => {
         const array = processor.contrast(new Uint8Array(img), value)
         return array.buffer

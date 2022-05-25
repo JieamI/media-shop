@@ -99,26 +99,3 @@ export function redo() {
   const image = pureRedo()
   pureSetImage(image)
 }
-
-
-
-// let currentHistoryForWorker: historyNode = {
-//   next: null,
-//   pre: null,
-//   image: undefined
-// }
-// let historyHeadForWorker = currentHistory // historyHead永远指向链表头部
-// let historyNodeLengthForWorker = 0
-
-// export function undoForWorker() {
-//   if(!currentHistoryForWorker.pre) return
-//   currentHistoryForWorker = currentHistoryForWorker.pre
-//   historyNodeLengthForWorker = historyNodeLengthForWorker - 1
-//   return currentHistoryForWorker.image
-// }
-
-// export function redoForWorker() {
-//   if(!currentHistoryForWorker.next) return
-//   currentHistoryForWorker = currentHistoryForWorker.next
-//   return currentHistoryForWorker.image
-// }

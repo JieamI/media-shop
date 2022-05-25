@@ -1,18 +1,16 @@
-import { Encoding, Processor } from "media-shop"
-import { BaseSyntheticEvent, useEffect, useRef, useState } from "react"
+import { Encoding } from "media-shop"
+import { BaseSyntheticEvent, useEffect, useState } from "react"
 import showError from "../../hooks/useError"
 import showLoading from "../../hooks/useLoading"
 import { Action } from "../../share/dispatcher"
 import style from '../../styles/gallery.module.scss'
 
 function Download({
-  image,
-  processor,
-  worker
+  worker,
+  originMeta
 }: {
-  image: ArrayBuffer | undefined,
-  processor: Processor,
-  worker: Worker
+  worker: Worker,
+  originMeta: { width: number, height: number, ratio: number } | undefined
 }) {
   console.log("download")
 
@@ -21,30 +19,19 @@ function Download({
   const [format, setFormat] = useState<string>("PNG")
   const [isLock, setIsLock] = useState(true)
   const [isEditMode, setIsEditMode] = useState(false)
-  const imageMeta = useRef<{ width: number, height: number, ratio: number }>()
   useEffect(() => {
-    if(!image || imageMeta.current) return
-    const img = new Image()
-    img.onload = () => {
-      imageMeta.current = {
-        width: img.naturalWidth,
-        height: img.naturalHeight,
-        ratio: img.naturalWidth / img.naturalHeight
-      }
-      setWidth(img.naturalWidth.toFixed())
-      setHeight(img.naturalHeight.toFixed())
-    }
-    const blob = new Blob([image])
-    img.src = URL.createObjectURL(blob)
-  }, [image])
+    if(!originMeta) return
+    setWidth(originMeta.width.toFixed())
+    setHeight(originMeta.height.toFixed())
+  }, [originMeta])
   
   const setEditMode = () => {
     setIsEditMode(!isEditMode)
   }
   const setLock = () => {
-    if(!isLock && imageMeta.current) {
-      setWidth(imageMeta.current.width.toFixed())
-      setHeight(imageMeta.current.height.toFixed())
+    if(!isLock && originMeta) {
+      setWidth(originMeta.width.toFixed())
+      setHeight(originMeta.height.toFixed())
     }
     setIsLock(!isLock)
   }
@@ -52,9 +39,9 @@ function Download({
   const onWidthChange = (e: BaseSyntheticEvent) => {
     const value: string = e.currentTarget.value
     setWidth(value)
-    if(!isLock || !imageMeta.current) return
+    if(!isLock || !originMeta) return
 
-    const ratio = imageMeta.current.ratio
+    const ratio = originMeta.ratio
     setHeight((parseInt(value) / ratio).toFixed())
     
   }
@@ -62,9 +49,9 @@ function Download({
   const onHeightChange = (e: BaseSyntheticEvent) => {
     const value: string = e.currentTarget.value
     setHeight(value)
-    if(!isLock || !imageMeta.current) return
+    if(!isLock || !originMeta) return
     
-    const ratio = imageMeta.current.ratio
+    const ratio = originMeta.ratio
     setWidth((ratio * parseInt(value)).toFixed())
   }
 
@@ -73,8 +60,9 @@ function Download({
   }
 
   const handleDownload = () => {
-    
-    
+    worker.postMessage({
+      action: Action.DOWNLOAD
+    })
     showLoading(async () => {
       const promise = new Promise<ArrayBuffer>((resolve, _) => {
         worker.onmessage = (e: MessageEvent) => {
@@ -85,8 +73,8 @@ function Download({
       // let buffer: ArrayBuffer = image as ArrayBuffer
       const curWidth = parseInt(width)
       const curHeight = parseInt(height)
-      const originWidth = (imageMeta.current as { width: number, height: number }).width
-      const originHeight = (imageMeta.current as { width: number, height: number }).height
+      const originWidth = (originMeta as { width: number, height: number }).width
+      const originHeight = (originMeta as { width: number, height: number }).height
       if(curWidth !== originWidth || curHeight !== originHeight) {
         // buffer = processor.resize(new Uint8Array(buffer), curWidth, curHeight)
         worker.postMessage({
@@ -117,6 +105,7 @@ function Download({
         action: Action.RETRIEVE
       })
       const buffer = await promise
+      console.log(buffer)
       const el = document.createElement("a")
       const blob = new Blob([buffer])
       el.href = URL.createObjectURL(blob)

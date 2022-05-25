@@ -48,6 +48,7 @@ function Gallery() {
   const [image, setImage] = useHistoryImage()
   const processor = useRef<Processor>()
   const worker = useRef<Worker>()
+  const originMeta = useRef<{ width: number, height: number, ratio: number}>()
   const [subScale, pubScale] = usePubSub<{[key: string]: any}>()
 
   useEffect(() => {
@@ -59,6 +60,12 @@ function Gallery() {
       await init()
       processor.current = new Processor()
       const buffer = await file.arrayBuffer()
+      const bitImage = await createImageBitmap(new Blob([buffer]))
+      originMeta.current = {
+        width: bitImage.width,
+        height: bitImage.height,
+        ratio: bitImage.width / bitImage.height
+      }
       const miniBuffer = await minimizeBuffer(buffer)
       setImage(miniBuffer)
 
@@ -89,8 +96,7 @@ function Gallery() {
         ></ToolBar>
          
         <Download 
-          image={ image }
-          processor={ processor.current as Processor }
+          originMeta={ originMeta.current }
           worker={ worker.current as Worker }
         ></Download>
       </div>

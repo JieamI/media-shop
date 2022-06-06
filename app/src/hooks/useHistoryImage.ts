@@ -58,14 +58,14 @@ export function createTracker(MAX_STACK_LENGTH: number) {
   }
 
   const undo = () => {
-    if(!currentHistory.pre) return
+    if(!currentHistory.pre) return currentHistory.image
     currentHistory = currentHistory.pre
     historyNodeLength = historyNodeLength - 1
     return currentHistory.image
   }
 
   const redo = () => {
-    if(!currentHistory.next) return
+    if(!currentHistory.next) return currentHistory.image
     currentHistory = currentHistory.next
     return currentHistory.image
   }
